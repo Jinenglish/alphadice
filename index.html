@@ -12,13 +12,21 @@
       src: url('//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf') format('opentype');
     }
 
+    @font-face {
+    font-family: 'WAGURITTF';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2403@1.0/WAGURITTF.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    }
+
+
     h1 {
       text-align: center;
-      color: black;
+      color: red;
       font-family: 'DNFBitBitv2', sans-serif;
-      font-size: 60px;
+      font-size: 50px;
       -webkit-text-stroke: 2px rgba(244, 244, 233, 0.5);
-      text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px rgb(229, 255, 124), 0 0 82px rgb(238, 255, 152), 0 0 92px rgba(255, 244, 128, 0.105), 0 0 102px rgb(233, 255, 147), 0 0 151px rgb(255, 53, 188);
+      text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #FFFF7E, 0 0 82px #FFFF7E, 0 0 92px rgba(255, 119, 237, 0.105), 0 0 102px #FFFF7E, 0 0 151px #FFFF7E;
     }
 
     body {
@@ -41,6 +49,13 @@
       align-items: center;
     }
 
+    #buttonContainer {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
     #output-container {
       margin-top: 7px;
     }
@@ -48,13 +63,18 @@
     #output {
       font-size: 100px;
       color: red;
+      font-family: 'WAGURITTF';
+    }
+
+    #countdown {
+      font-size: 50px;
+      color: blue;
       font-family: 'DNFBitBitv2', sans-serif;
+      margin-top: 20px;
     }
 
     button {
-      margin: 0 auto;
       font-size: 25px;
-      background-color: #9afabc;
       border-radius: 10px;
       cursor: pointer;
       transition: background-color 0.3s;
@@ -65,63 +85,183 @@
       background-color: #fab7f9;
     }
 
+    .roll-button {
+      background-color: #9afabc;
+    }
+
+    .stop-button {
+      background-color: red;
+      color: white;
+    }
+
     html {
       cursor: url(cina.png), auto;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #setupContainer {
+      text-align: center;
+      font-family: 'DNFBitBitv2', sans-serif;
+    }
+
+    #backToSetup {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: #ffcc00;
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'DNFBitBitv2', sans-serif;
+    }
+
+    #explosionImage {
+      display: none;
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   </style>
 </head>
 <body>
-<h1 style="font-size:50px; font-family: 'DNFBitBitv2', sans-serif;"> 영어 주사위 게임 !</h1>
-<audio id="diceSound" src="dicesound.mp3" preload="auto"></audio> <!-- 효과음 추가 -->
-<audio id="appearSound" src="appear.mp3" preload="auto"></audio> <!-- 추가 효과음 -->
-
-<!-- 배경음악을 재생할 <audio> 요소 -->
+<h1 style="font-size:50px; font-family: 'DNFBitBitv2', sans-serif;"> 🔥강화된 시나모롤 주사위🔥</h1>
+<audio id="diceSound" src="dicesound.mp3" preload="auto"></audio>
+<audio id="appearSound" src="appear.mp3" preload="auto"></audio>
+<audio id="explosionSound" src="popsound.mp3" preload="auto"></audio>
 <audio id="bgMusic" src="clockticking.mp3" preload="auto" loop></audio>
 
-<!-- 재생 및 일시 정지를 토글할 버튼 -->
 <div id="musicControls">
   <button id="toggleButton">♬</button>
 </div>
 
-<img class="dice-image" src="주사위.png" style="width: 200px;" id="dice"> <!-- 주사위 이미지의 ID 추가 -->
+<img class="dice-image hidden" src="주사위.png" style="width: 200px;" id="dice">
+<img src="cina2.png" style="width: 400px; height: 400px;" id="explosionImage">
 
-<div id="mouse"></div>
-<div id="diceContainer">
-  <button onclick="rollDice()">시작하기!</button>
-  <!-- 출력되는 랜덤 알파벳을 가운데 정렬하기 위한 컨테이너 -->
+<div id="setupContainer">
+  <label for="players">인원 수: </label>
+  <input type="number" id="players" min="1" value="1"><br>
+  <label for="time">시간 설정(초): </label>
+  <input type="number" id="time" min="1" value="10"><br>
+  <button onclick="startGame()">⭐게임 설정⭐</button>
+</div>
+
+<div id="diceContainer" class="hidden">
+  <img class="dice-image" src="주사위.png" style="width: 200px;" id="dice">
+  <div id="buttonContainer">
+    <button class="roll-button" id="rollButton" onclick="rollDice()">🎲주사위 굴리기🎲</button>
+    <button class="stop-button hidden" id="stopButton" onclick="stopDice()">멈춰⚡<!DOCTYPE html></button>
+  </div>
   <div id="output-container">
-    <!-- 출력되는 랜덤 알파벳을 여기로 이동 -->
     <div id="output"></div>
+    <div id="countdown"></div>
   </div>
 </div>
 
+<div id="backToSetup" class="hidden" onclick="goBackToSetup()">열정쌤제작</div>
+
 <script>
+  let players;
+  let time;
+  let currentRound = 0;
+  let interval;
+  let stopped = false;
+
+  function startGame() {
+    players = parseInt(document.getElementById('players').value);
+    time = parseInt(document.getElementById('time').value);
+
+    document.getElementById('setupContainer').classList.add('hidden');
+    document.getElementById('diceContainer').classList.remove('hidden');
+    document.getElementById('backToSetup').classList.remove('hidden');
+  }
+
   function rollDice() {
+    clearInterval(interval);
+    stopped = false;
+    currentRound = 0;
+    document.getElementById('stopButton').classList.remove('hidden');
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
     document.getElementById('output').textContent = randomLetter;
 
-    const dice = document.getElementById('dice'); // 주사위 이미지의 ID 사용
+    const dice = document.getElementById('dice');
     dice.style.transform = 'rotate(820deg)';
     setTimeout(() => {
       dice.style.transform = '';
     }, 1000);
-    
-    // 효과음 재생
+
     const diceSound = document.getElementById('diceSound');
     diceSound.play();
 
-    // diceSound가 끝날 때 다른 효과음 재생
     diceSound.addEventListener('ended', function() {
       const appearSound = document.getElementById('appearSound');
-      appearSound.volume = 0.1; // 볼륨 조절 (0 ~ 1)
       appearSound.play();
     });
+
+    startCountdown(time);
   }
 
-  // 버튼을 클릭하여 배경음악 재생 및 일시 정지를 토글하는 함수
-  const bgMusic = document.getElementById('bgMusic'); // 배경음악을 제어할 <audio> 요소
-  const toggleButton = document.getElementById('toggleButton'); // 재생 및 일시 정지를 토글할 버튼
+  function stopDice() {
+    clearInterval(interval);
+    stopped = true;
+    document.getElementById('stopButton').classList.add('hidden');
+  }
+
+  function startCountdown(seconds) {
+    clearInterval(interval);
+    document.getElementById('countdown').textContent = seconds;
+
+    interval = setInterval(() => {
+      seconds--;
+      document.getElementById('countdown').textContent = seconds;
+      if (seconds <= 0) {
+        clearInterval(interval);
+        document.getElementById('countdown').textContent = '0';
+        const explosionSound = document.getElementById('explosionSound');
+        showExplosionImage();
+        explosionSound.play();
+        setTimeout(() => {
+          hideExplosionImage();
+          currentRound++;
+          if (currentRound < players && !stopped) {
+            startCountdown(time);
+          } else {
+            currentRound = 0;
+            document.getElementById('rollButton').disabled = false;
+          }
+        }, 1000);
+      }
+    }, 1000);
+  }
+
+  function showExplosionImage() {
+    const explosionImage = document.getElementById('explosionImage');
+    explosionImage.style.display = 'block';
+  }
+
+  function hideExplosionImage() {
+    const explosionImage = document.getElementById('explosionImage');
+    explosionImage.style.display = 'none';
+  }
+
+  function goBackToSetup() {
+    document.getElementById('diceContainer').classList.add('hidden');
+    document.getElementById('setupContainer').classList.remove('hidden');
+    document.getElementById('backToSetup').classList.add('hidden');
+    document.getElementById('stopButton').classList.add('hidden');
+    clearInterval(interval);
+  }
+
+  const bgMusic = document.getElementById('bgMusic');
+  const toggleButton = document.getElementById('toggleButton');
+
   function toggleMusic() {
     if (bgMusic.paused) {
       bgMusic.play();
@@ -132,7 +272,6 @@
     }
   }
 
-  // 버튼 클릭 시 toggleMusic 함수 호출
   toggleButton.addEventListener('click', toggleMusic);
 </script>
 </body>
